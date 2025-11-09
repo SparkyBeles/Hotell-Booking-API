@@ -1,0 +1,43 @@
+node_modules
+.serverless
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Serverless build artifacts
+.serverless/
+.cloudformation/
+.meta/
+.webpack/
+.aws-sam/
+
+# AWS credentials and environment files
+.env
+.env.*
+*.pem
+*.key
+aws-credentials.json
+
+# Local development data (e.g. offline DynamoDB)
+.dynamodb/
+.localstack/
+.tmp/
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# OS files
+Thumbs.db
+
+# Build and test outputs
+dist/
+build/
+coverage/
