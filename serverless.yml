@@ -1,11 +1,16 @@
+useDotenv: true
+
 # "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: grupp3
+org: ${env:ORG}
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: Hotell-API
 
 provider:
   name: aws
   runtime: nodejs20.x
+  region: eu-north-1
+  profile: ${env:PROFILE}
+
   # Uncomment to easily set up a custom domain. Read the docs for more details:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com
@@ -17,3 +22,6 @@ functions:
       - httpApi:
           path: /
           method: get
+
+plugins:
+  - serverless-dotenv-plugin
