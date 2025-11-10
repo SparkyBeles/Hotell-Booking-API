@@ -37,6 +37,7 @@ npm install serverless-dotenv-plugin --save-dev
 <h3>Create .env file with this info in the project root folder the same as serverless yaml fil:
 <h5> ORG=Your serverless user config </h5>
 <h5> PROFILE=default </h5>
+<h5> IAM_Role= Your IAM Role </h5>
 
 
 <h3>To deploy your serverless</h3>  
