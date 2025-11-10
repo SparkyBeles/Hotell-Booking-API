@@ -1,5 +1,4 @@
 useDotenv: true
-
 # "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: ${env:ORG}
 # "service" is the name of this project. This will also be added to your AWS resource names.
@@ -11,10 +10,6 @@ provider:
   region: eu-north-1
   profile: ${env:PROFILE}
 
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
-
 functions:
   hello:
     handler: handler.hello
@@ -22,6 +17,20 @@ functions:
       - httpApi:
           path: /
           method: get
+
+resources:
+  Resources:
+    dogsDb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: hotell-db
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
 plugins:
   - serverless-dotenv-plugin
