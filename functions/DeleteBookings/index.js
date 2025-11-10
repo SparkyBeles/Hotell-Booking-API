@@ -1,5 +1,5 @@
 const { sendResponse } =require('../../response/index.js');
-const { DynamoDBClient, AttributeValue } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DeleteCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 
 const client = new DynamoDBClient({});
