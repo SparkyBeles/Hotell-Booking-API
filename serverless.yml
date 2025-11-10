@@ -1,7 +1,6 @@
 useDotenv: true
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+
 org: ${env:ORG}
-# "service" is the name of this project. This will also be added to your AWS resource names.
 service: Hotell-API
 
 provider:
@@ -9,18 +8,21 @@ provider:
   runtime: nodejs20.x
   region: eu-north-1
   profile: ${env:PROFILE}
+  environment:
+    TABLE_NAME: hotell-db
 
 functions:
-  hello:
-    handler: handler.hello
+  createBooking:
+    handler: handler.createBooking
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /bookings
+          method: post
+
 
 resources:
   Resources:
-    dogsDb:
+    hotellDb:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: hotell-db
