@@ -8,6 +8,8 @@ provider:
   runtime: nodejs20.x
   region: eu-north-1
   profile: ${env:PROFILE}
+  iam:
+    role: ${env:IAM_Role}
   environment:
     TABLE_NAME: hotell-db
 
