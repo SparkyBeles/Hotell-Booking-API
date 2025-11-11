@@ -10,7 +10,7 @@ exports.handler = async (event) => {
     const { id } = event.pathParameters;
 
     const command = new DeleteCommand({
-        TableName: 'hotell-db',
+        TableName: 'hotell-db-v2',
         Key: { id: id },
         ReturnValues: 'ALL_OLD'
     });
