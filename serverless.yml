@@ -19,19 +19,24 @@ functions:
           path: /
           method: get
   DeleteBookings:
-      handler: functions/DeleteBookings/index.handler
-      events:
-        - httpApi:
-            path: /bookings/{id}
-            method: delete 
+    handler: functions/DeleteBookings/index.handler
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: delete
   GetBookings:
-      handler: functions/GetBookings/index.handler
-      events:
-        - httpApi:
-            path: /bookings
-            method: get
+    handler: functions/GetBookings/index.handler
+    events:
+      - httpApi:
+          path: /bookings
+          method: get
 
-
+  PostBookings:
+    handler: functions/PostBooking/index.handler
+    events:
+      - httpApi:
+          path: /bookings
+          method: post
 resources:
   Resources:
     hotellDb:

@@ -2,7 +2,8 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.927.0",
     "@aws-sdk/lib-dynamodb": "^3.927.0",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "serverless-dotenv-plugin": "^6.0.0"
