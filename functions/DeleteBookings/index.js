@@ -3,6 +3,7 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DeleteCommand,
   DynamoDBDocumentClient,
+  GetCommand,
 } = require("@aws-sdk/lib-dynamodb");
 
 const client = new DynamoDBClient({});
@@ -19,29 +20,44 @@ exports.handler = async (event) => {
     Key: { id: id },
     ReturnValues: "ALL_OLD",
   });
+  const getCommand = new GetCommand({
+      TableName: "hotell-db-v2",
+      Key: { id },
+    });
 
   try {
-    const deleting = await db.send(command);
 
-    if (!deleting.Attributes) {
+    const getBooking = await db.send(getCommand);
+
+     if (!getBooking.Item) {
       return sendResponse(404, {
         success: false,
         message: "No booking found to delete",
       });
     }
 
+    //Get today's date and check in date.
     const todaysDate = new Date().toISOString().split("T")[0];
-    const checkInDate = deleting.Attributes.checkInDate;
+    const checkInDate = getBooking.Item.checkInDate;
+
+    //Change time so both dates has the same time. 
+    const today = new Date(todaysDate);
+    const checkIn = new Date(checkInDate);
 
 
-    console.log(todaysDate, checkInDate)
+    const differenceInDays = Math.floor((checkIn - today) / (1000 * 60 * 60 * 24));
 
-    if (checkInDate === todaysDate) {
+    console.log("Difference in days:", differenceInDays);
+    console.log(today, checkIn)
+
+    if (differenceInDays <= 2) {
       return sendResponse(500, {
         success: false,
         message: "You can't delete booking so soon to check in."
       });
     } else {
+
+    const deleting = await db.send(command);
 
     return sendResponse(200, {
       success: true,
