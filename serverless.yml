@@ -18,13 +18,31 @@ functions:
       - httpApi:
           path: /
           method: get
+  DeleteBookings:
+    handler: functions/DeleteBookings/index.handler
+    events:
+      - httpApi:
+          path: /bookings/{id}
+          method: delete
+  GetBookings:
+    handler: functions/GetBookings/index.handler
+    events:
+      - httpApi:
+          path: /bookings
+          method: get
 
+  PostBookings:
+    handler: functions/PostBooking/index.handler
+    events:
+      - httpApi:
+          path: /bookings
+          method: post
 resources:
   Resources:
-    dogsDb:
+    hotellDb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: hotell-db
+        TableName: hotell-db-v2
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
