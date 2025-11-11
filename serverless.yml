@@ -28,7 +28,7 @@ functions:
 
 resources:
   Resources:
-    dogsDb:
+    hotellDb:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: hotell-db
