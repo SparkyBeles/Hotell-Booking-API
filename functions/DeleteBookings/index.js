@@ -9,6 +9,9 @@ const client = new DynamoDBClient({});
 const db = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
+
+    console.log("Lambda started");
+
   const { id } = event.pathParameters;
 
   const command = new DeleteCommand({
@@ -30,19 +33,22 @@ exports.handler = async (event) => {
     const todaysDate = new Date().toISOString().split("T")[0];
     const checkInDate = deleting.Attributes.checkInDate;
 
-    if (checkInDate == todaysDate) {
+
+    console.log(todaysDate, checkInDate)
+
+    if (checkInDate === todaysDate) {
       return sendResponse(500, {
         success: false,
-        message: "You can't delete booking so soon to check in.",
-        error: error.message,
+        message: "You can't delete booking so soon to check in."
       });
-    }
+    } else {
 
     return sendResponse(200, {
       success: true,
       message: "Booking was successfully deleted!",
       deletedBooking: deleting.Attributes,
     });
+    }
   } catch (error) {
     return sendResponse(500, {
       success: false,
