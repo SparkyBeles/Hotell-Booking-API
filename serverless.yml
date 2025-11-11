@@ -24,13 +24,20 @@ functions:
         - httpApi:
             path: /bookings/{id}
             method: delete 
+  GetBookings:
+      handler: functions/GetBookings/index.handler
+      events:
+        - httpApi:
+            path: /bookings
+            method: get
+
 
 resources:
   Resources:
     hotellDb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: hotell-db
+        TableName: hotell-db-v2
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
