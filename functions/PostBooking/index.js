@@ -5,7 +5,7 @@ const { sendResponse } = require('../../response/index.js');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 
-
+// Pair coded by Youssef,camila,yuel.
 const client = new DynamoDBClient({});
 const db = DynamoDBDocumentClient.from(client);
 
