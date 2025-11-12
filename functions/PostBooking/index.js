@@ -17,6 +17,14 @@ const ROOM_PRICES = {
     suite: 1500,
 };
 
+// Maximum o
+const Hotel_Rooms =[
+    // 5 Double rooms.  // 10 single rooms  // 5 Suite rooms
+   "double_room-1.1","double_room-1.2","double_room-1.3","double_room-1.4", "double_room-1.5",
+   "Single_room-2.1", "Single_room-2.2", "Single_room-2.3","Single_room-2.4","Single_room-2.5","Single_room-2.6","Single_room-2.7","Single_room-2.8","Single_room-2.9","Single_room-2.10",
+   "suite_room-3.1","suite_room-3.2","suite_room-3.3","suite_room-3.4","suite_room-3.5",
+]
+
 
 exports.handler = async (event) => {
 
@@ -47,8 +55,12 @@ exports.handler = async (event) => {
 
         const bookingId = uuidv4();
 
+        // temporary id for rooms for test purpose.
+        const roomId = `${roomType.toLowerCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
         const booking = {
-            id: bookingId,
+            roomId: roomId,
+            bookingId: bookingId,
             name,
             email,
             guests,
@@ -59,7 +71,7 @@ exports.handler = async (event) => {
         };
 
         const command = new PutCommand({
-            TableName: 'hotell-db-v2',
+            TableName: 'hotell-Bookings',
             Item: booking,
         });
 
@@ -74,6 +86,7 @@ exports.handler = async (event) => {
             totalAmount: totalAmount,
             checkInDate: checkInDate,
             checkOutDate: checkOutDate,
+            roomId: roomId,
         };
 
         return sendResponse(200, {

@@ -9,7 +9,7 @@ const db = DynamoDBDocumentClient.from(client);
 exports.handler = async (event) => {
 
  const command = new ScanCommand({
-      TableName: 'hotell-db-v2',
+      TableName: 'hotell-Bookings',
       //Filtrerar ut id
       FilterExpression: "attribute_exists(#id)",
       ExpressionAttributeNames: {
