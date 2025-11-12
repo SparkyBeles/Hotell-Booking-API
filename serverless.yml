@@ -37,6 +37,13 @@ functions:
       - httpApi:
           path: /bookings
           method: post
+  PostRooms:
+    handler: functions/PostRooms/index.handler
+    events:
+      - httpApi:
+          path: /rooms
+          method: post
+
 
 resources:
   Resources:
