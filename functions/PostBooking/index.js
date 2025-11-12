@@ -3,7 +3,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { sendResponse } = require('../../response/index.js');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
+const { PutCommand, QueryCommand,DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 
 // Pair coded by Youssef,camila,yuel.
 const client = new DynamoDBClient({});
@@ -17,13 +17,59 @@ const ROOM_PRICES = {
     suite: 1500,
 };
 
-// Maximum o
-const Hotel_Rooms =[
-    // 5 Double rooms.  // 10 single rooms  // 5 Suite rooms
-   "double_room-1.1","double_room-1.2","double_room-1.3","double_room-1.4", "double_room-1.5",
-   "Single_room-2.1", "Single_room-2.2", "Single_room-2.3","Single_room-2.4","Single_room-2.5","Single_room-2.6","Single_room-2.7","Single_room-2.8","Single_room-2.9","Single_room-2.10",
-   "suite_room-3.1","suite_room-3.2","suite_room-3.3","suite_room-3.4","suite_room-3.5",
-]
+const HOTEL_ROOMS = {
+    double: [
+        "double_room-1.1", "double_room-1.2", "double_room-1.3", "double_room-1.4", "double_room-1.5"
+    ],
+    single: [
+        "single_room-2.1", "single_room-2.2", "single_room-2.3", "single_room-2.4", "single_room-2.5",
+        "single_room-2.6", "single_room-2.7", "single_room-2.8", "single_room-2.9", "single_room-2.10"
+    ],
+    suite: [
+        "suite_room-3.1", "suite_room-3.2", "suite_room-3.3", "suite_room-3.4", "suite_room-3.5"
+    ]
+};
+
+// Check if dates overlap
+function datesOverlap(start1, end1, start2, end2) {
+    return start1 < end2 && start2 < end1;
+}
+
+// Find available room for the requested dates
+async function findAvailableRoom(roomType, checkInDate, checkOutDate, db) {
+    const rooms = HOTEL_ROOMS[roomType.toLowerCase()];
+    
+    if (!rooms || rooms.length === 0) {
+        return null;
+    }
+
+    for (const roomId of rooms) {
+        const command = new QueryCommand({
+            TableName: 'hotell-Bookings',
+            KeyConditionExpression: 'roomId = :roomId',
+            ExpressionAttributeValues: {
+                ':roomId': roomId
+            }
+        });
+
+        const { Items } = await db.send(command);
+
+        const isAvailable = !Items.some(booking => 
+            datesOverlap(
+                new Date(checkInDate),
+                new Date(checkOutDate),
+                new Date(booking.checkInDate),
+                new Date(booking.checkOutDate)
+            )
+        );
+
+        if (isAvailable) {
+            return roomId;
+        }
+    }
+
+    return null;
+}
 
 
 exports.handler = async (event) => {
@@ -55,8 +101,17 @@ exports.handler = async (event) => {
 
         const bookingId = uuidv4();
 
-        // temporary id for rooms for test purpose.
-        const roomId = `${roomType.toLowerCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+
+        // Find available room
+        const roomId = await findAvailableRoom(roomType, checkInDate, checkOutDate, db);
+
+        if (!roomId) {
+            return sendResponse(409, { 
+                success: false, 
+                message: `No available ${roomType} rooms for the selected dates` 
+            });
+        }
 
         const booking = {
             roomId: roomId,
