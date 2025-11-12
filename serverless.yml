@@ -18,31 +18,39 @@ functions:
       - httpApi:
           path: /
           method: get
-  DeleteBookings:
-    handler: functions/DeleteBookings/index.handler
-    events:
-      - httpApi:
-          path: /bookings/{id}
-          method: delete
-  GetBookings:
-    handler: functions/GetBookings/index.handler
+    CreateBooking:
+    handler: functions/CreateBooking/index.handler
     events:
       - httpApi:
           path: /bookings
+          method: post        
+  DeleteBookings:
+      handler: functions/DeleteBookings/index.handler
+      events:
+        - httpApi:
+            path: /bookings/{id}
+            method: delete 
+ # ========== ROOMS ==========
+  GetRooms:
+    handler: functions/GetRooms/index.handler
+    events:
+      - httpApi:
+          path: /rooms
           method: get
 
-  PostBookings:
-    handler: functions/PostBooking/index.handler
+  PostRoom:
+    handler: functions/PostRoom/index.handler
     events:
       - httpApi:
-          path: /bookings
+          path: /rooms
           method: post
+
 resources:
   Resources:
     hotellDb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: hotell-db-v2
+        TableName: hotell-db
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -50,6 +58,18 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    # Rooms
+    RoomsTable:
+     Type: AWS::DynamoDB::Table
+     Properties:
+      TableName: rooms-db
+      AttributeDefinitions:
+      - AttributeName: roomType
+        AttributeType: S
+      KeySchema:
+      - AttributeName: roomType
+        KeyType: HASH
+     BillingMode: PAY_PER_REQUEST
 
 plugins:
   - serverless-dotenv-plugin

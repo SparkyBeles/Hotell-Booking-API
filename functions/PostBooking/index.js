@@ -9,6 +9,15 @@ const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 const client = new DynamoDBClient({});
 const db = DynamoDBDocumentClient.from(client);
 
+// Room price list
+// Confirmation function pair coded by Elin and Emilia
+const ROOM_PRICES = {
+    single: 500,
+    double: 1000,
+    suite: 1500,
+};
+
+
 exports.handler = async (event) => {
 
     try {
@@ -19,6 +28,39 @@ exports.handler = async (event) => {
         if (!name || !email || !guests || !roomType || !checkInDate || !checkOutDate) {
             return sendResponse(400, { success: false, message: 'All fields are required!' });
         }
+
+        // check is room in rooms-db
+    const roomData = await db.send(new GetCommand({
+      TableName: 'rooms-db',
+      Key: { roomType },
+    }));
+
+    if (!roomData.Item) {
+      return sendResponse(404, { success: false, message: 'Room type not found!' });
+    }
+
+    const room = roomData.Item;
+
+    // check if room available
+    if (room.availableRooms <= 0) {
+      return sendResponse(400, { success: false, message: 'No rooms available for this type!' });
+    }
+
+        // Calculates how many nights a guest is staying
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+        const msPerDay = 1000 * 60 * 60 * 24;
+        let nights = Math.round((checkOut - checkIn) / msPerDay)
+        if (nights < 1) {
+            nights = 1; // sets the minimum to one night
+        }
+
+        // price per night from room type
+        const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
+
+        const numberOfRooms = 1; //TODO there should be more than one room type, plus multiple rooms should be bookable
+
+        const totalAmount = pricePerNight * nights * numberOfRooms;
 
         const bookingId = uuidv4();
 
@@ -38,12 +80,35 @@ exports.handler = async (event) => {
             Item: booking,
         });
 
-        await db.send(command);
+    // Updated number of available rooms in rooms-db (minus 1)
+
+        await db.send(new UpdateCommand({
+         TableName: 'rooms-db',
+         Key: { roomType },
+         UpdateExpression: 'SET availableRooms = availableRooms - :dec',
+         ConditionExpression: 'availableRooms > :zero',
+          ExpressionAttributeValues: {
+           ':dec': 1,
+           ':zero': 0,
+           },
+        }));
+
+        // order confirmation
+        const confirmation = {
+            bookingNumber: bookingId,
+            guestName,
+            guests,
+            roomType,
+            totalAmount,
+            checkInDate,
+            checkOutDate,
+        };
 
         return sendResponse(200, {
             success: true,
             message: 'Booking created successfully!',
-            booking,
+            booking,    // our saved booking
+            confirmation,   // confirmation client should get
         });
 
     } catch (error) {
