@@ -56,6 +56,14 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
+        GlobalSecondaryIndexes:
+          - IndexName: BookingIdIndex
+            KeySchema:
+              - AttributeName: bookingId
+                KeyType: HASH       # now we can query by bookingId directly
+            Projection:
+              ProjectionType: ALL
+
     HotellRoomsTable:
       Type: AWS::DynamoDB::Table
       Properties:
