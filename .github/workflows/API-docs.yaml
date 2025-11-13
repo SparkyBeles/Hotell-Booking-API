@@ -1,0 +1,57 @@
+name: Generate API Docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from your repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Use the same version as in your serverless.yml
+
+      # Step 3: Install Serverless Framework and project dependencies
+      - name: Install Dependencies
+        run: |
+          npm install -g serverless
+          npm ci
+
+      # Step 4: Generate the OpenAPI specification (openapi.json)
+      - name: Generate OpenAPI Spec
+        run: sls openapi generate -o openapi.json -f json
+
+      # Step 5: Install the tool to convert JSON to Markdown
+      - name: Install swagger-markdown
+        run: npm install -g swagger-markdown
+
+      # Step 6: Convert the OpenAPI spec to a Markdown file
+      - name: Convert OpenAPI to Markdown
+        run: swagger-markdown -i openapi.json -o API_DOCS.md
+
+      # Step 7: Update README.md with the new documentation
+      - name: Update README.md
+        run: |
+          # Read the generated documentation content from the file
+          DOCS_CONTENT=$(cat API_DOCS.md)
+
+          # Use sed to replace the content between the markers.
+          # NOTE: LC_ALL and LANG are important to handle special characters correctly.
+          LC_ALL=C LANG=C sed -i.bak -e "/<!-- START_API_DOCS -->/,/<!-- END_API_DOCS -->/{ /<!-- START_API_DOCS -->/{p; r API_DOCS.md
+          }; /<!-- END_API_DOCS -->/p; d }" README.md
+
+      # Step 8: Commit and push the changes to the repository
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(api): Automatically update API documentation"
+          file_pattern: README.md
