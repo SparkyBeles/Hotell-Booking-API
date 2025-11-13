@@ -10,10 +10,10 @@ exports.handler = async (event) => {
 
  const command = new ScanCommand({
       TableName: 'hotell-Bookings',
-      //Filtrerar ut id
-      FilterExpression: "attribute_exists(#id)",
+      //Filtrerar ut bookingId
+      FilterExpression: "attribute_exists(#bookingId)",
       ExpressionAttributeNames: {
-        "#id" : "id"
+        "#bookingId" : "bookingId"
       }
     });
 

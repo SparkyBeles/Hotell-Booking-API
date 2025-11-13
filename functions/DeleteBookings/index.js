@@ -24,6 +24,14 @@ exports.handler = async (event) => {
       });
     }
 
+  const command = new DeleteCommand({
+    TableName: "hotell-Bookings",
+    Key: { bookingId: id },
+    ReturnValues: "ALL_OLD",
+  });
+  const getCommand = new GetCommand({
+      TableName: "hotell-Bookings",
+      Key: { bookingId: id },
     // Find the booking by querying the BookingIdIndex GSI on bookingId
     const findBookingCmd = new QueryCommand({
       TableName: "hotell-Bookings",
