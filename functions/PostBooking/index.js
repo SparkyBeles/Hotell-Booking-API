@@ -95,11 +95,13 @@ exports.handler = async (event) => {
         // price per night from room type
         const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
 
-        const numberOfRooms = 1; //TODO there should be more than one room type, plus multiple rooms should be bookable
+        // For now we only allow booking ONE room per request
+        // so numberOfRooms is always 1 for this API version.
+        const numberOfRooms = 1;
 
         const totalAmount = pricePerNight * nights * numberOfRooms;
 
-        const bookingId = uuidv4();
+        const bookingId = uuidv4(); // used in the confirmation notice and is saved to DynamoDB
 
 
 
@@ -134,11 +136,12 @@ exports.handler = async (event) => {
 
         // order confirmation
         const confirmation = {
-            bookingNumber: bookingId,
+            bookingID: bookingId,
             guestName: name,
             guests: guests,
             rooms: numberOfRooms,
             totalAmount: totalAmount,
+            currency: "SEK",
             checkInDate: checkInDate,
             checkOutDate: checkOutDate,
             roomId: roomId,
