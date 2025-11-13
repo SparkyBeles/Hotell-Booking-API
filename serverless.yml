@@ -16,9 +16,10 @@ functions:
   DeleteBookings:
     handler: functions/DeleteBookings/index.handler
     events:
-      - httpApi:
+      - http:
           path: /bookings/{id}
           method: delete
+          cors: true
           documentation:
             summary: "Delete a booking"
             description: "Deletes a specific booking using its unique ID."
@@ -36,9 +37,10 @@ functions:
   GetBookings:
     handler: functions/GetBookings/index.handler
     events:
-      - httpApi:
+      - http:
           path: /bookings
           method: get
+          cors: true
           documentation:
             summary: "Get all bookings"
             description: "Returns a list of all existing bookings."
@@ -55,9 +57,10 @@ functions:
   PostBookings:
     handler: functions/PostBooking/index.handler
     events:
-      - httpApi:
+      - http:
           path: /bookings
           method: post
+          cors: true
           documentation:
             summary: "Create a new booking"
             description: "Creates a new booking for a room."
@@ -78,9 +81,10 @@ functions:
   PostRooms:
     handler: functions/PostRooms/index.handler
     events:
-      - httpApi:
+      - http:
           path: /rooms
           method: post
+          cors: true
           documentation:
             summary: "Create a new room"
             description: "Adds a new hotel room to the system."
