@@ -1,0 +1,43 @@
+name: Build and Push Docker Image
+
+# This workflow runs on pushes to the 'main' branch.
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    # IMPORTANT: Grants write permissions to the GitHub Container Registry.
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Logs into ghcr.io using a temporary token for security.
+      - name: Log in to the Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Creates smart tags for the image (e.g., 'latest' and a tag for the specific commit).
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      # This step builds the image from your Dockerfile and pushes it to GHCR.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

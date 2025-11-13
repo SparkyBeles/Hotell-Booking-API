@@ -12,12 +12,6 @@ provider:
     role: ${env:IAM_Role}
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   DeleteBookings:
     handler: functions/DeleteBookings/index.handler
     events:
@@ -43,7 +37,6 @@ functions:
       - httpApi:
           path: /rooms
           method: post
-
 
 resources:
   Resources:
