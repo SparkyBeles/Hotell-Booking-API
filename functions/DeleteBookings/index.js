@@ -16,13 +16,13 @@ exports.handler = async (event) => {
   const { id } = event.pathParameters;
 
   const command = new DeleteCommand({
-    TableName: "hotell-db-v2",
-    Key: { id: id },
+    TableName: "hotell-Bookings",
+    Key: { bookingId: id },
     ReturnValues: "ALL_OLD",
   });
   const getCommand = new GetCommand({
-      TableName: "hotell-db-v2",
-      Key: { id },
+      TableName: "hotell-Bookings",
+      Key: { bookingId: id },
     });
 
   try {
