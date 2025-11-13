@@ -68,6 +68,13 @@ exports.handler = async (event) => {
         message: "All fields are required!",
       });
     }
+    // check if checkIn and checkOut is the same day (not allowed!)
+    if(checkInDate === checkOutDate) {
+        return sendResponse(400, {
+        success: false,
+        message: "Check in and check out can't be same day. Please change your dates.",
+      });
+    }
 
     // Calculates how many nights a guest is staying
     const checkIn = new Date(checkInDate);
@@ -76,6 +83,24 @@ exports.handler = async (event) => {
     let nights = Math.round((checkOut - checkIn) / msPerDay);
     if (nights < 1) {
       nights = 1; // sets the minimum to one night
+    }
+    // Check if checkout date is before checkin date (not allowed (or even possible...))
+    if (checkIn > checkOut) {
+        return sendResponse(400, {
+        success: false,
+        message: "You can't check in after check out. Please change your dates.",
+      });
+    }
+
+    const todaysDate = new Date().toISOString().split("T")[0];
+    const today = new Date(todaysDate);
+    // Checkout date or check in date is before today's date (not possible)
+    if (checkIn < today || checkOut < today ) {
+        return sendResponse(400, {
+        success: false,
+        message: "Your dates have aldready passed. Please change your dates.",
+      });
+
     }
 
     // price per night from room type
