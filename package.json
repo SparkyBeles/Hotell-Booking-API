@@ -6,6 +6,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "serverless-dotenv-plugin": "^6.0.0"
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-openapi-documentation": "^0.4.0"
   }
 }
