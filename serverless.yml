@@ -11,6 +11,7 @@ provider:
   iam:
     role: ${env:IAM_Role}
 
+functions:
   DeleteBookings:
     handler: functions/DeleteBookings/index.handler
     events:
