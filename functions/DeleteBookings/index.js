@@ -73,7 +73,8 @@ exports.handler = async (event) => {
       console.log("Difference in days:", differenceInDays);
       console.log(today, checkIn);
 
-      if (differenceInDays <= 2) {
+      if (differenceInDays >= 0 && differenceInDays <= 2) {
+        // block only when check-in is between today and 2 days from now
         return sendResponse(500, {
           success: false,
           message: "You can't delete booking so close to check in."
