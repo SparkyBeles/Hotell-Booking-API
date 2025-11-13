@@ -10,6 +10,8 @@ Serverless API for hotel bookings with AWS Lambda and DynamoDB.
 
 ## Installation
 
+### Option 1: Local Installation
+
 1. **Clone the project**
 ```bash
 git clone https://github.com/SparkyBeles/Hotell-Booking-API.git
@@ -32,6 +34,27 @@ IAM_Role=your-iam-role-arn
 4. **Deploy**
 ```bash
 serverless deploy
+```
+
+### Option 2: Docker
+
+1. **Clone the project**
+```bash
+git clone https://github.com/SparkyBeles/Hotell-Booking-API.git
+cd Hotell-Booking-API
+```
+
+2. **Create `.env` file**
+```env
+ORG=your-serverless-org
+PROFILE=default
+IAM_Role=your-iam-role-arn
+```
+
+3. **Build and deploy with Docker**
+```bash
+docker build -t hotel-api .
+docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless deploy
 ```
 
 ## API Endpoints
