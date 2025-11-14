@@ -58,7 +58,9 @@ docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless dep
 ```
 
 ## API Endpoints
-
+  ```bash
+  https://4zbzfkkq3yrca7n4mlaj5uiboi0gwssr.lambda-url.eu-north-1.on.aws/
+  ```
 - `POST /bookings` - Create booking
 - `GET /bookings` - Get bookings
 - `DELETE /bookings/{id}` - Delete booking
