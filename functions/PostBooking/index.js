@@ -17,6 +17,12 @@ const ROOM_PRICES = {
     suite: 1500,
 };
 
+const MAX_GUESTS_PER_ROOM = {
+    single: 1,
+    double: 2,
+    suite: 4
+};
+
 const HOTEL_ROOMS = {
     double: [
         "double_room-1.1", "double_room-1.2", "double_room-1.3", "double_room-1.4", "double_room-1.5"
@@ -83,6 +89,16 @@ exports.handler = async (event) => {
             return sendResponse(400, { success: false, message: 'All fields are required!' });
         }
 
+        const maxGuests = MAX_GUESTS_PER_ROOM[roomType.toLowerCase()] || 0;
+        const numberOfRooms = Math.ceil(guests / maxGuests);
+
+        if (guests > maxGuests * numberOfRooms) {
+            return sendResponse(400, {
+                success: false,
+                message: 'Too many guests for ${roomType} room(s). Max ${maxGuests} guests per room.',
+            });
+        }
+
         // Calculates how many nights a guest is staying
         const checkIn = new Date(checkInDate);
         const checkOut = new Date(checkOutDate);
@@ -94,8 +110,6 @@ exports.handler = async (event) => {
 
         // price per night from room type
         const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
-
-        const numberOfRooms = 1; //TODO there should be more than one room type, plus multiple rooms should be bookable
 
         const totalAmount = pricePerNight * nights * numberOfRooms;
 
