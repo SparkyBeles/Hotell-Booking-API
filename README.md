@@ -70,7 +70,7 @@ docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless dep
     ```bash
   {"name": "jacob ",
   "email": "jacob@example.com",
-  "guests": 2,
+  "guests": 1,
   "roomType": "single",
   "checkInDate": "2025-11-20",
   "checkOutDate": "2025-11-25"}
