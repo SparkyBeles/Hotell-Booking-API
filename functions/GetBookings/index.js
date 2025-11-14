@@ -17,9 +17,14 @@ exports.handler = async (event) => {
       }
     });
 
+    try {
+        const { Items } = await db.send(command);
+        
+        return sendResponse(200, {success : true, bookings : Items});
 
-    const { Items } = await db.send(command);
+    } catch(error) {
 
-
-    return sendResponse(200, {success : true, bookings : Items});
+      return sendResponse(500, {success : false, error: error.message});
+    }
+   
 }
