@@ -125,7 +125,7 @@ exports.handler = async (event) => {
     // price per night from room type
     const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
 
-     //TODO there should be more than one room type, plus multiple rooms should be bookable
+     
     const totalAmount = pricePerNight * nights * numberOfRooms;
     const bookingId = uuidv4();
     
