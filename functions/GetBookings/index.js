@@ -10,16 +10,21 @@ exports.handler = async (event) => {
 
  const command = new ScanCommand({
       TableName: 'hotell-Bookings',
-      //Filtrerar ut id
-      FilterExpression: "attribute_exists(#id)",
+      //Filtrerar ut bookingId
+      FilterExpression: "attribute_exists(#bookingId)",
       ExpressionAttributeNames: {
-        "#id" : "id"
+        "#bookingId" : "bookingId"
       }
     });
 
+    try {
+        const { Items } = await db.send(command);
+        
+        return sendResponse(200, {success : true, bookings : Items});
 
-    const { Items } = await db.send(command);
+    } catch(error) {
 
-
-    return sendResponse(200, {success : true, bookings : Items});
+      return sendResponse(500, {success : false, error: error.message});
+    }
+   
 }

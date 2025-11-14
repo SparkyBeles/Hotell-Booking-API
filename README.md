@@ -1,59 +1,72 @@
-<div align= center> <h1>A simple API with serverless and DynomoDB for booking hotell room.</h1></div>
+# Hotel Booking API
 
-<h2>Prerequisites</h2>
-<p>We assum you already have installed the AWS CLI,node.js, serverless and configured it.
-  
+Serverless API for hotel bookings with AWS Lambda and DynamoDB.
+
+## Prerequisites
+
+- Node.js 20+
+- AWS CLI configured
+- Serverless Framework
+
+## Installation
+
+### Option 1: Local Installation
+
+1. **Clone the project**
 ```bash
- npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
+git clone https://github.com/SparkyBeles/Hotell-Booking-API.git
+cd Hotell-Booking-API
 ```
-</p>
 
----
-<h2>Install the project</h2>
-Clone the repo
-
+2. **Install dependencies**
 ```bash
-https://github.com/SparkyBeles/Hotell-Booking-API.git
+npm install
+npm install -g serverless
 ```
 
- 
- ```bash
-install serverless -g
- ```
-
- ```bash
-serverless -v
+3. **Create `.env` file**
+```env
+ORG=your-serverless-org
+PROFILE=default
+IAM_Role=your-iam-role-arn
 ```
 
-```bash
-npm install serverless-dotenv-plugin --save-dev
-```
-
----
-
-
-
-
-<h3>Create .env file with this info in the project root folder the same as serverless yaml fil:
-<h5> ORG=Your serverless user config </h5>
-<h5> PROFILE=default </h5>
-<h5> IAM_Role= Your IAM Role </h5>
-
-
-<h3>To deploy your serverless</h3>  
-
+4. **Deploy**
 ```bash
 serverless deploy
 ```
 
+### Option 2: Docker
 
-# API Endpoints
+1. **Clone the project**
+```bash
+git clone https://github.com/SparkyBeles/Hotell-Booking-API.git
+cd Hotell-Booking-API
+```
 
-<ul>
-<li>Post</li>
-<li>GET</li>
-<li>DELETE</li>
-<li>PUT</li>
-</ol>
+2. **Create `.env` file**
+```env
+ORG=your-serverless-org
+PROFILE=default
+IAM_Role=your-iam-role-arn
+```
 
-# Dynomodb Table
+3. **Build and deploy with Docker**
+```bash
+docker build -t hotel-api .
+docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless deploy
+```
+
+## API Endpoints
+  ```bash
+  https://4zbzfkkq3yrca7n4mlaj5uiboi0gwssr.lambda-url.eu-north-1.on.aws/
+  ```
+- `POST /bookings` - Create booking
+- `GET /bookings` - Get bookings
+- `DELETE /bookings/{id}` - Delete booking
+- `POST /rooms` - Create room
+
+## DynamoDB Tables
+
+- `hotell-Bookings` - Bookings (roomId, bookingId)
+- `hotell-Rooms` - Rooms (roomId)
