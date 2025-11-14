@@ -62,11 +62,22 @@ docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless dep
   https://4zbzfkkq3yrca7n4mlaj5uiboi0gwssr.lambda-url.eu-north-1.on.aws/
   ```
 - `POST /bookings` - Create booking
+    ```bash
+  {"name": "jacob ",
+  "email": "jacob@example.com",
+  "guests": 2,
+  "roomType": "single",
+  "checkInDate": "2025-11-20",
+  "checkOutDate": "2025-11-25"}
+  ```
+  
 - `GET /bookings` - Get bookings
 - `DELETE /bookings/{id}` - Delete booking
 - `POST /rooms` - Create room
+  ### Rooms creates only  1 times
 
 ## DynamoDB Tables
 
 - `hotell-Bookings` - Bookings (roomId, bookingId)
 - `hotell-Rooms` - Rooms (roomId)
+ 
