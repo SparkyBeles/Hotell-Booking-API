@@ -56,8 +56,8 @@ function isRoomAvailable(room, checkInDate, checkOutDate) {
 }
 
 exports.handler = async (event) => {
-  try {
-    const data = JSON.parse(event.body);
+
+  const data = JSON.parse(event.body);
 
     console.log(data)
 
@@ -171,62 +171,6 @@ exports.handler = async (event) => {
         const bookingId = uuidv4();
 
 
-
-        // Find available room
-        const roomId = await findAvailableRoom(roomType, checkInDate, checkOutDate, db);
-
-        if (!roomId) {
-            return sendResponse(409, { 
-                success: false, 
-                message: `No available ${roomType} rooms for the selected dates` 
-            });
-        }
-
-        const booking = {
-            roomId: roomId,
-            bookingId: bookingId,
-            name,
-            email,
-            guests,
-            roomType,
-            checkInDate,
-            checkOutDate,
-            createdAt: new Date().toISOString(),
-        };
-
-        const command = new PutCommand({
-            TableName: 'hotell-Bookings',
-            Item: booking,
-        });
-
-        await db.send(command);
-
-        // order confirmation
-        const confirmation = {
-            bookingNumber: bookingId,
-            guestName: name,
-            guests: guests,
-            rooms: numberOfRooms,
-            totalAmount: totalAmount,
-            checkInDate: checkInDate,
-            checkOutDate: checkOutDate,
-            roomId: roomId,
-        };
-
-        return sendResponse(200, {
-            success: true,
-            message: 'Booking created successfully!',
-            booking,    // our saved booking
-            confirmation,   // confirmation client should get
-        });
-
-    } catch (error) {
-        return sendResponse(500, {
-            success: false,
-            message: 'Failed to create booking',
-            error: error.message,
-        });
-
     let availableRoom = null;
     //Loop through all the rooms of wanted roomType and every room is checked to see if it is available to be booked (or until an available room is found).
     for (const room of roomResult.Items) {
@@ -271,6 +215,7 @@ exports.handler = async (event) => {
       email,
       guests,
       roomType,
+      numberOfRooms: 1, 
       checkInDate,
       checkOutDate,
       createdAt: new Date().toISOString(),
@@ -308,4 +253,5 @@ exports.handler = async (event) => {
       error: error.message,
     });
   }
+
 };
