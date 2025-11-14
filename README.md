@@ -78,8 +78,8 @@ docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless dep
   
 - `GET /bookings` - Get bookings
 - `DELETE /bookings/{id}` - Delete booking
+   ### Rooms are created only once, during the first deployment; the maximum number of rooms is 20.
 - `POST /rooms` - Create room
-  ### Rooms creates only  1 times
 
 ## DynamoDB Tables
 
