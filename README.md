@@ -61,6 +61,11 @@ docker run -it --rm -v ~/.aws:/root/.aws -v $(pwd):/app hotel-api serverless dep
   ```bash
   https://4zbzfkkq3yrca7n4mlaj5uiboi0gwssr.lambda-url.eu-north-1.on.aws/
   ```
+
+  ```bash
+  https://vz825rs8k1.execute-api.eu-north-1.amazonaws.com/
+  ```
+
 - `POST /bookings` - Create booking
     ```bash
   {"name": "jacob ",
