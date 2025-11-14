@@ -26,7 +26,7 @@ const ROOM_PRICES = {
 const MAX_GUESTS_PER_ROOM = {
     single: 1,
     double: 2,
-    suite: 4
+    suite: 3
 };
 
 /**
@@ -57,6 +57,7 @@ function isRoomAvailable(room, checkInDate, checkOutDate) {
 
 exports.handler = async (event) => {
 
+    try{
   const data = JSON.parse(event.body);
 
     console.log(data)
@@ -111,10 +112,20 @@ exports.handler = async (event) => {
 
     }
 
+    const maxGuests = MAX_GUESTS_PER_ROOM[roomType.toLowerCase()] || 0;
+
+        if (!(guests === maxGuests)) {
+            return sendResponse(400, {
+                success: false,
+                message: `You can only book a ${roomType}-room with exactly ${maxGuests} guests per room.`,
+            });
+        }
+    const numberOfRooms = 1;
+
     // price per night from room type
     const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
 
-    const numberOfRooms = 1; //TODO there should be more than one room type, plus multiple rooms should be bookable
+     //TODO there should be more than one room type, plus multiple rooms should be bookable
     const totalAmount = pricePerNight * nights * numberOfRooms;
     const bookingId = uuidv4();
     
@@ -133,43 +144,6 @@ exports.handler = async (event) => {
         message: `No ${roomType} in system`,
       });
     }
-
-
-    try {
-        const data = JSON.parse(event.body);
-
-        const { name, email, guests, roomType, checkInDate, checkOutDate } = data;
-
-        if (!name || !email || !guests || !roomType || !checkInDate || !checkOutDate) {
-            return sendResponse(400, { success: false, message: 'All fields are required!' });
-        }
-
-        const maxGuests = MAX_GUESTS_PER_ROOM[roomType.toLowerCase()] || 0;
-        const numberOfRooms = Math.ceil(guests / maxGuests);
-
-        if (guests > maxGuests * numberOfRooms) {
-            return sendResponse(400, {
-                success: false,
-                message: 'Too many guests for ${roomType} room(s). Max ${maxGuests} guests per room.',
-            });
-        }
-
-        // Calculates how many nights a guest is staying
-        const checkIn = new Date(checkInDate);
-        const checkOut = new Date(checkOutDate);
-        const msPerDay = 1000 * 60 * 60 * 24;
-        let nights = Math.round((checkOut - checkIn) / msPerDay)
-        if (nights < 1) {
-            nights = 1; // sets the minimum to one night
-        }
-
-        // price per night from room type
-        const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
-
-        const totalAmount = pricePerNight * nights * numberOfRooms;
-
-        const bookingId = uuidv4();
-
 
     let availableRoom = null;
     //Loop through all the rooms of wanted roomType and every room is checked to see if it is available to be booked (or until an available room is found).
@@ -215,7 +189,7 @@ exports.handler = async (event) => {
       email,
       guests,
       roomType,
-      numberOfRooms: 1, 
+      numberOfRooms, 
       checkInDate,
       checkOutDate,
       createdAt: new Date().toISOString(),
