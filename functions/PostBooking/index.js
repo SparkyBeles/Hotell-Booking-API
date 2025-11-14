@@ -22,6 +22,13 @@ const ROOM_PRICES = {
   suite: 1500,
 };
 
+
+const MAX_GUESTS_PER_ROOM = {
+    single: 1,
+    double: 2,
+    suite: 4
+};
+
 /**
  * Check if the room is available the dates the guest wants to book or not. 
  */
@@ -45,6 +52,7 @@ function isRoomAvailable(room, checkInDate, checkOutDate) {
     }
   }
   return true;
+
 }
 
 exports.handler = async (event) => {
@@ -127,6 +135,98 @@ exports.handler = async (event) => {
     }
 
 
+    try {
+        const data = JSON.parse(event.body);
+
+        const { name, email, guests, roomType, checkInDate, checkOutDate } = data;
+
+        if (!name || !email || !guests || !roomType || !checkInDate || !checkOutDate) {
+            return sendResponse(400, { success: false, message: 'All fields are required!' });
+        }
+
+        const maxGuests = MAX_GUESTS_PER_ROOM[roomType.toLowerCase()] || 0;
+        const numberOfRooms = Math.ceil(guests / maxGuests);
+
+        if (guests > maxGuests * numberOfRooms) {
+            return sendResponse(400, {
+                success: false,
+                message: 'Too many guests for ${roomType} room(s). Max ${maxGuests} guests per room.',
+            });
+        }
+
+        // Calculates how many nights a guest is staying
+        const checkIn = new Date(checkInDate);
+        const checkOut = new Date(checkOutDate);
+        const msPerDay = 1000 * 60 * 60 * 24;
+        let nights = Math.round((checkOut - checkIn) / msPerDay)
+        if (nights < 1) {
+            nights = 1; // sets the minimum to one night
+        }
+
+        // price per night from room type
+        const pricePerNight = ROOM_PRICES[roomType.toLowerCase()] || 0;
+
+        const totalAmount = pricePerNight * nights * numberOfRooms;
+
+        const bookingId = uuidv4();
+
+
+
+        // Find available room
+        const roomId = await findAvailableRoom(roomType, checkInDate, checkOutDate, db);
+
+        if (!roomId) {
+            return sendResponse(409, { 
+                success: false, 
+                message: `No available ${roomType} rooms for the selected dates` 
+            });
+        }
+
+        const booking = {
+            roomId: roomId,
+            bookingId: bookingId,
+            name,
+            email,
+            guests,
+            roomType,
+            checkInDate,
+            checkOutDate,
+            createdAt: new Date().toISOString(),
+        };
+
+        const command = new PutCommand({
+            TableName: 'hotell-Bookings',
+            Item: booking,
+        });
+
+        await db.send(command);
+
+        // order confirmation
+        const confirmation = {
+            bookingNumber: bookingId,
+            guestName: name,
+            guests: guests,
+            rooms: numberOfRooms,
+            totalAmount: totalAmount,
+            checkInDate: checkInDate,
+            checkOutDate: checkOutDate,
+            roomId: roomId,
+        };
+
+        return sendResponse(200, {
+            success: true,
+            message: 'Booking created successfully!',
+            booking,    // our saved booking
+            confirmation,   // confirmation client should get
+        });
+
+    } catch (error) {
+        return sendResponse(500, {
+            success: false,
+            message: 'Failed to create booking',
+            error: error.message,
+        });
+
     let availableRoom = null;
     //Loop through all the rooms of wanted roomType and every room is checked to see if it is available to be booked (or until an available room is found).
     for (const room of roomResult.Items) {
@@ -134,6 +234,7 @@ exports.handler = async (event) => {
         availableRoom = room;
         break;
       }
+
     }
 
     if (!availableRoom) {
